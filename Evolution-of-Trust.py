@@ -17,14 +17,15 @@ import sys
 import random
 import math
 import cProfile
+
 class Gamer:
+  __slots__ = ['former_round', 'output', 'points']
   def __init__(self):
     self.former_round = None
     self.output = None
     self.points = 0
   def end_of_turns(self):
-    self.former_round = None
-    self.output = None
+    self.former_round, self.output = None, None
   def make_decision(self):
     raise NotImplementedError
 
@@ -61,6 +62,7 @@ class the_chaos(Gamer):
     return self.output
 
 class the_stubborn(Gamer):
+  __slots__ = ['is_betrayed']
   def __init__(self):
     super().__init__()
     self.is_betrayed = 0
@@ -76,6 +78,7 @@ class the_stubborn(Gamer):
     self.is_betrayed = 0
 
 class the_generous_copycat(Gamer):
+  __slots__ = ['tolerance', 'betrayed_times']
   def __init__(self):
     super().__init__()
     self.tolerance = 2
@@ -95,6 +98,7 @@ class the_generous_copycat(Gamer):
     self.betrayed_times = 0
 
 class pavlov(Gamer):
+  __slots__ = ['default_output']
   def __init__(self):
     super().__init__()
     self.default_output =1
@@ -109,6 +113,7 @@ class pavlov(Gamer):
     return self.output
 
 class majority_follower(Gamer):
+  __slots__ = ['oppo_total', 'default_output']
   def __init__(self):
     super().__init__()
     self.oppo_total = 0
@@ -131,6 +136,7 @@ class majority_follower(Gamer):
     self.oppo_total = 0
 
 class the_mean_copycat(Gamer):
+  __slots__ = ['revenge_times', 'revenge_count']
   def __init__(self):
     super().__init__()
     self.revenge_times = 2 #default
@@ -165,6 +171,7 @@ class the_vicious_copycat(Gamer):
       return self.output
 
 class operator_gamer(Gamer):
+  __slots__ = ['default_output' ,'operator']
   def __init__(self):
     super().__init__()
     self.default_output = 1
@@ -190,6 +197,7 @@ class operator_gamer(Gamer):
     return self.output
 
 class the_tricker(Gamer):
+  __slots__ = ['cooperate_times']
   def __init__(self):
     super().__init__()
     self.cooperate_times = 1
@@ -205,6 +213,7 @@ class the_tricker(Gamer):
     self.cooperate_times = 1
 
 class detective(Gamer):
+  __slots__ = ['sequence_deci', 'is_betrayed', 'count_turns']
   def __init__(self):
     super().__init__()
     self.sequence_deci = 13 #default is 13, namely [1, 1, 0, 1]
@@ -404,6 +413,7 @@ def get_replacement(tuples, t):
   return to_be_replaced, to_be_duplicated_count
 
 class game():
+  __slots__ = ['num_of_gamers', 'num_of_turns', 'TT', 'TB', 'BB', 'gamers_dict', 'dict_keys', 'clear_points', 'replacement_n', 'mistake_rate']
   def __init__(self):
     attributes_game = {'num_of_gamers': 0, 'num_of_turns': 10,
                'TT': [2,2], 'TB': [-1, 3], 'BB': [0, 0],
@@ -542,7 +552,7 @@ class game():
 
 def new_test_case():
   game1 = game()
-  game1.num_of_turns = 5
+  game1.num_of_turns = 10
   game1.mistake_rate = 0.05
   game1.add_gamer(copycat, 100)
   game1.add_gamer(the_believer, 100)
@@ -554,7 +564,7 @@ def new_test_case():
   game1.add_gamer(the_tricker, 100)
   game1.add_gamer(the_mean_copycat, 100)
   game1.add_gamer(detective, 100)
-  tmp_round = 5
+  tmp_round = 10
   for i in range(tmp_round):
     if i == tmp_round-1:
       game1.clear_points = 0
@@ -568,7 +578,11 @@ def new_test_case():
   print('\n')
   game1.print_points_avg()
 
+import time
+start_time = time.time()
 new_test_case()
+end_time = time.time()
+print(f"Time taken: {end_time - start_time} seconds")
 
 k = game()
 k.add_gamer(the_mean_copycat, 1)
@@ -576,11 +590,4 @@ k.add_gamer(copycat, 1)
 k.run_matches()
 k.print_points(0)
 
-#print(np.random.rand(100, 5))
-def test_case():
-  arr = np.zeros(10000000)
 cProfile.run('new_test_case()')
-
-np.dtype([('name', 'S10'), ('age', 'i4'), ('scores', 'f8', (3,))])
-x = np.zeros(10, dtype=[('name', 'S10'), ('age', 'i4'), ('scores', 'f8', (3,))])
-print(x)
